@@ -5,5 +5,7 @@ Are you having a hard time getting an appointment from KVR for your bluecard app
 
 ## Example .env
 
+```
 TELEGRAM_TOKEN=123
 CHAT_ID=123
+```

@@ -3,6 +3,7 @@ from telegram_bot import TelegramBot
 import schedule
 import time
 
+MINUTES = 10
 scraper = Scraper()
 bot = TelegramBot()
 
@@ -11,6 +12,7 @@ def get_message(appointments):
     print(appointments)
     free_appointments = []
     message = ""
+    send_message = False
     for date in appointments:
         value = appointments[date]
         if len(value) > 0:
@@ -18,15 +20,17 @@ def get_message(appointments):
             print(date, value)
 
     if len(free_appointments) == 0:
-        message = "Unfortunately I couldn't find any free appointment :( but I will keep you updated in 30 mins."
+        message = f"Unfortunately I couldn't find any free appointment :( but I will keep you updated in {MINUTES} mins."
+        send_message = False
         print(message)
 
     else:
         url = "https://www46.muenchen.de/termin/index.php"
         message = "I found these: {free_appointments}. Get your appointment here: {url}"
+        send_message = True
         print(message)
 
-    return message
+    return message, send_message
 
 
 def get_appointments():
@@ -45,14 +49,16 @@ def get_appointments():
 
 
 def job():
+    print()
     print('Cron job running...')
     appointments = get_appointments()
-    message = get_message(appointments)
-    bot.send_message(message)
+    message, send_message = get_message(appointments)
+    if send_message:
+        bot.send_message(message)
 
 
 job()
-schedule.every(10).minutes.do(job)
+schedule.every(MINUTES).minutes.do(job)
 while 1:
     schedule.run_pending()
     time.sleep(1)

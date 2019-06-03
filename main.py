@@ -26,7 +26,7 @@ def get_message(appointments):
 
     else:
         url = "https://www46.muenchen.de/termin/index.php"
-        message = "I found these: {free_appointments}. Get your appointment here: {url}"
+        message = f"I found these: {free_appointments}. Get your appointment here: {url}"
         send_message = True
         print(message)
 

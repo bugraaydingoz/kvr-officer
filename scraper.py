@@ -1,7 +1,16 @@
-from requests import Session
-from bs4 import BeautifulSoup
-import re
 import json
+import os
+import re
+from urllib.parse import quote
+
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+from requests import Session
+
+load_dotenv(dotenv_path='.env')
+appointment = quote(os.environ['APPOINTMENT_TYPE'])
+appointment_code = str(os.environ['APPOINTMENT_CODE'])
+num = os.environ.get('APPOINTMENT_QUANTITY', 1)
 
 
 class Scraper:
@@ -11,8 +20,8 @@ class Scraper:
 
         # Request params
         self.url = "https://www46.muenchen.de/termin/index.php"
-        self.querystring = {"cts": "1080627"}
-        self.payload = "step=WEB_APPOINT_SEARCH_BY_CASETYPES&CASETYPES%5BAufenthaltserlaubnis%20Blaue%20Karte%20EU%5D=1"
+        self.querystring = {"cts": appointment_code}
+        self.payload = f"step=WEB_APPOINT_SEARCH_BY_CASETYPES&{appointment}={num}"
         self.headers = {
             'Connection': "keep-alive",
             'Cache-Control': "max-age=0",
@@ -47,8 +56,9 @@ class Scraper:
         appointments = json.loads(appointments_text)
         return appointments["Termin Wartezone SCIF"]["appoints"]
 
-    def __find_json_object(self, regex, text):
+    @staticmethod
+    def __find_json_object(regex, text):
         match = re.search(regex, text)
         appointments = str(match.groups()[0])
-        appointments = appointments[1:len(appointments)-1]
+        appointments = appointments[1:len(appointments) - 1]
         return appointments

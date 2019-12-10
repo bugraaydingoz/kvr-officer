@@ -3,3 +3,4 @@ bs4
 lxml
 python-dotenv
 schedule
+apscheduler
